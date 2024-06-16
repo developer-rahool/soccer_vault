@@ -1,91 +1,78 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:soccer_vault/controller/matches_provider.dart';
-
-import '../../app_textfieldformfield.dart';
+import 'package:soccer_vault/controller/goal_scorer_provider.dart';
 import '../../const.dart';
 import '../../popup/custom_alert.dart';
-import '../../popup/matches_popup.dart';
+import '../../popup/goal_scorer_popup.dart';
+import '../../popup/searchGaols_popup.dart';
 
-class MatchesPage extends StatefulWidget {
-  const MatchesPage({super.key});
+class GoalScorePage extends StatefulWidget {
+  const GoalScorePage({super.key});
 
   @override
-  State<MatchesPage> createState() => _MatchesPageState();
+  State<GoalScorePage> createState() => _GoalScorePageState();
 }
 
-class _MatchesPageState extends State<MatchesPage> {
-  MatchesProvider data = MatchesProvider();
+class _GoalScorePageState extends State<GoalScorePage> {
+  GoalScorerProvider data = GoalScorerProvider();
 
   @override
   void initState() {
-    data = context.read<MatchesProvider>();
+    data = context.read<GoalScorerProvider>();
     load();
     super.initState();
   }
 
   load() async {
-    data.fetchMatches();
+    data.fetchGoalScores();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: lightBlackColor,
-      body: Consumer<MatchesProvider>(builder: (context, provider, child) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(30, 30, 30, 10),
-          child: Column(
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(30, 30, 30, 10),
+        child:
+            Consumer<GoalScorerProvider>(builder: (context, provider, child) {
+          return Column(
             children: [
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  BackButtonWidget(),
-                  Text(
-                    "Matches By Year",
+                  const BackButtonWidget(),
+                  const Text(
+                    "Goal Score By Match",
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: darkBlackColor),
                   ),
-                  SizedBox()
+                  //SizedBox()
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (BuildContext context) =>
+                                const CustomAlert(
+                                  dialogueWidget: SearchGoalPopup(),
+                                ));
+                      },
+                      icon: const Icon(
+                        Icons.search,
+                        size: 24.5,
+                        color: midBlackColor,
+                      ))
                 ],
               ),
               const SizedBox(
-                height: 15,
-              ),
-              AppTextFormField(
-                appController: provider.searchController,
-                height: 40,
-                keyboardType: TextInputType.number,
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                maxLengthLine: 1,
-                suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.search,
-                    color: Colors.black45,
-                  ),
-                  onPressed: () {
-                    provider.onPress();
-                  },
-                ),
-                onEditingComplete: () {
-                  provider.onPress();
-                },
-                hintText: "Search by year",
-                // onChanged: (query) {
-                //   provider.onChanged(query!);
-                //   return;
-                // },
-              ),
-              SizedBox(
-                height: 15,
+                height: 20,
               ),
               Expanded(
                 child: provider.isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : provider.filteredMatches.isEmpty
+                    : provider.filteredGoalScore.isEmpty
                         ? const Center(
                             child: Text("No Records",
                                 style: TextStyle(
@@ -93,12 +80,13 @@ class _MatchesPageState extends State<MatchesPage> {
                           )
                         : SingleChildScrollView(
                             child: SizedBox(
-                              height: screenHeight(context) * 0.77,
+                              height: screenHeight(context) * 0.81,
                               width: double.infinity,
                               child: ListView.builder(
-                                itemCount: provider.filteredMatches.length,
+                                itemCount: provider.filteredGoalScore.length,
                                 itemBuilder: (context, index) {
-                                  final match = provider.filteredMatches[index];
+                                  final goal =
+                                      provider.filteredGoalScore[index];
                                   return Card(
                                     elevation: 1,
                                     child: ListTile(
@@ -108,19 +96,20 @@ class _MatchesPageState extends State<MatchesPage> {
                                             context: context,
                                             builder: (BuildContext context) =>
                                                 CustomAlert(
-                                                  dialogueWidget: MatchesPopup(
-                                                    data: match,
+                                                  dialogueWidget:
+                                                      GoalScorerPopup(
+                                                    data: goal,
                                                   ),
                                                 ));
                                       },
                                       title: Text(
-                                          '${match.homeTeam} vs ${match.awayTeam}',
+                                          '${goal.homeTeam} vs ${goal.awayTeam}',
                                           style: const TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600)),
                                       subtitle: Text(
-                                          'Tournament: ${match.tournament}'),
-                                      trailing: Text('${match.date}'),
+                                          'Scorer: ${goal.scorer}, Minute: ${goal.minute}'),
+                                      trailing: Text('${goal.date}'),
                                     ),
                                   );
                                 },
@@ -129,9 +118,9 @@ class _MatchesPageState extends State<MatchesPage> {
                           ),
               )
             ],
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }

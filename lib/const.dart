@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+import 'screens/home_screen.dart';
+
 const Color darkBlackColor = Color(0xFF191919);
 const Color midBlackColor = Color(0xFF757575);
 const Color lightBlackColor = Color(0xFFE8E8E8);
@@ -10,8 +12,7 @@ const Color orangeColor = Color(0xFFFE8833);
 const Color lightGreenColor = Color(0xFFCCEDCE);
 
 nextPage(BuildContext context, Widget page) {
-  Navigator.pushReplacement(
-      context, MaterialPageRoute(builder: (context) => page));
+  Navigator.push(context, MaterialPageRoute(builder: (context) => page));
 }
 
 screenHeight(BuildContext context) {
@@ -63,6 +64,26 @@ class Custom_Button extends StatelessWidget {
           style: const TextStyle(
               fontSize: 16, fontWeight: FontWeight.bold, color: darkBlackColor),
         ),
+      ),
+    );
+  }
+}
+
+class BackButtonWidget extends StatelessWidget {
+  const BackButtonWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        nextPage(context, HomeScreen());
+      },
+      icon: const Icon(
+        Icons.arrow_back_ios_new,
+        size: 20,
+        color: midBlackColor,
       ),
     );
   }

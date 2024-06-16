@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:soccer_vault/models/goal_scorer_model.dart';
 import 'package:soccer_vault/models/teamsModel.dart';
 
 import 'models/matchesModel.dart';
@@ -18,8 +19,8 @@ class Services {
     'x-apihub-key': 'rh5syBTEajhGpmfn5QB6XaiXogrkfgPOhBi8PfjcJjtbdN1QFM',
     'x-apihub-host': 'International-Football-Results-API.allthingsdev.co'
   };
-  Future getMatchesByYear() async {
-    var url = Uri.parse('${_baseUrl}matches?year=2023&skip=0&limit=10');
+  Future getMatchesByYear(String? year) async {
+    var url = Uri.parse('${_baseUrl}matches?year=$year&skip=0&limit=10');
     try {
       var response = await http.get(url, headers: headers);
 
@@ -36,8 +37,8 @@ class Services {
     }
   }
 
-  Future getTeamStatistics() async {
-    var url = Uri.parse('${_baseUrl}statistics-by-team?team=brazil');
+  Future getTeamStatistics(String? team) async {
+    var url = Uri.parse('${_baseUrl}statistics-by-team?team=$team');
     try {
       var response = await http.get(url, headers: headers);
 
@@ -72,9 +73,9 @@ class Services {
     }
   }
 
-  Future getCountriesByTournaments() async {
+  Future getCountriesByTournaments(String tournament) async {
     var url = Uri.parse(
-        '${_baseUrl}list-countries-by-tournaments?tournament=Friendly&skip=0&limit=10');
+        '${_baseUrl}list-countries-by-tournaments?tournament=$tournament&skip=0&limit=10');
     try {
       var response = await http.get(url, headers: headers);
 
@@ -87,6 +88,26 @@ class Services {
             .toList();
       } else {
         print('Error: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future getGoalScores(String? date, String? homeTeam, String? awayTeam) async {
+    var url = Uri.parse('${_baseUrl}scorer');
+    try {
+      final response = await http.post(url, headers: headers, body: {
+        "date": date ?? "1916-07-02",
+        "awayTeam": awayTeam ?? "Uruguay",
+        "homeTeam": homeTeam ?? "Chile"
+      });
+
+      if (response.statusCode == 200) {
+        var responseData = jsonDecode(response.body);
+        return responseData['data']
+            .map((json) => GoalScorerModel.fromJson(json))
+            .toList();
       }
     } catch (e) {
       print('Error: $e');

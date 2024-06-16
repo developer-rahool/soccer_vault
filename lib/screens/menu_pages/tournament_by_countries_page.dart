@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:soccer_vault/models/tournament_by_countries_model.dart';
-import 'package:soccer_vault/screens/home_screen.dart';
+import 'package:provider/provider.dart';
 
 import '../../app_textfieldformfield.dart';
 import '../../const.dart';
-import '../../httpService.dart';
+import '../../controller/tournament_country_provider.dart';
 import '../../popup/countriesList_popup.dart';
 import '../../popup/custom_alert.dart';
 
@@ -16,154 +15,122 @@ class CountryTournamentPage extends StatefulWidget {
 }
 
 class _CountryTournamentPageState extends State<CountryTournamentPage> {
-  final searchController = TextEditingController();
-  List<CountryTournamentData> originalTournaments = [];
-  List<CountryTournamentData> filteredTournaments = [];
-  bool isLoading = true;
-
+  TournamentByCountryProvider data = TournamentByCountryProvider();
   @override
   void initState() {
-    fetchCountriesByTournaments();
+    data = context.read<TournamentByCountryProvider>();
+    load();
     super.initState();
   }
 
-  fetchCountriesByTournaments() async {
-    try {
-      var tournamentModel = await Services().getCountriesByTournaments();
-
-      originalTournaments = tournamentModel;
-      filteredTournaments = List.from(originalTournaments);
-
-      setState(() {
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      print(e);
-    }
-  }
-
-  void searchByAlphabet(String query, BuildContext context) {
-    if (query.isEmpty) {
-      setState(() {
-        filteredTournaments = List.from(originalTournaments);
-      });
-    } else {
-      setState(() {
-        filteredTournaments = originalTournaments.where((data) {
-          String lowercaseTournament = data.id.toString().toLowerCase();
-          String lowercaseSearchQuery = query.toLowerCase();
-          return lowercaseSearchQuery
-              .split('')
-              .every((letter) => lowercaseTournament.contains(letter));
-        }).toList();
-      });
-    }
+  load() async {
+    data.fetchCountriesByTournaments();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: lightBlackColor,
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    nextPage(context, HomeScreen());
-                  },
-                  icon: Icon(
-                    Icons.arrow_back_ios_new,
-                    size: 18,
-                    color: midBlackColor,
+      body: Consumer<TournamentByCountryProvider>(
+          builder: (context, provider, child) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(30, 30, 30, 10),
+          child: Column(
+            children: [
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  BackButtonWidget(),
+                  Text(
+                    "Country List",
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: darkBlackColor),
                   ),
-                ),
-                Text(
-                  "Country List",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: darkBlackColor),
-                ),
-                SizedBox()
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            AppTextFormField(
-              appController: searchController,
-              height: 40,
-              contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-              maxLengthLine: 1,
-              prefixIcon: Icon(
-                Icons.search,
-                color: Colors.black45,
+                  SizedBox()
+                ],
               ),
-              hintText: "Search",
-              onChanged: (query) {
-                setState(() {
-                  searchByAlphabet(query!, context);
-                });
-
-                return;
-              },
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Expanded(
-              child: isLoading
-                  ? Center(child: const CircularProgressIndicator())
-                  : SingleChildScrollView(
-                      child: SizedBox(
-                        height: screenHeight(context) * 0.78,
-                        width: double.infinity,
-                        child: Card(
-                          color: Colors.white,
-                          elevation: 1.5,
-                          child: ListView.builder(
-                            itemCount: filteredTournaments.length,
-                            itemBuilder: (context, index) {
-                              final tournament = filteredTournaments[index];
-                              return Card(
-                                elevation: 1,
-                                child: ListTile(
-                                  onTap: () {
-                                    showDialog(
-                                        barrierDismissible: false,
-                                        context: context,
-                                        builder: (BuildContext context) =>
-                                            CustomAlert(
-                                              dialogueWidget:
-                                                  CountriesListPopup(
-                                                data: tournament,
-                                              ),
-                                            ));
-                                  },
-                                  title: Text('${tournament.id}',
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600)),
-                                  subtitle:
-                                      Text(tournament.teams?.join(', ') ?? ''),
-                                ),
-                              );
-                            },
+              const SizedBox(
+                height: 15,
+              ),
+              AppTextFormField(
+                appController: provider.searchController,
+                height: 40,
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                maxLengthLine: 1,
+                suffixIcon: IconButton(
+                  icon: const Icon(
+                    Icons.search,
+                    color: Colors.black45,
+                  ),
+                  onPressed: () {
+                    provider.onPress();
+                  },
+                ),
+                onEditingComplete: () {
+                  provider.onPress();
+                },
+                hintText: "Search by tournament",
+                // onChanged: (query) {
+                //   provider.onChanged(query!);
+                //   return;
+                // },
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Expanded(
+                child: provider.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : provider.filteredTournaments.isEmpty
+                        ? const Center(
+                            child: Text("No Records",
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w600)),
+                          )
+                        : SingleChildScrollView(
+                            child: SizedBox(
+                              height: screenHeight(context) * 0.78,
+                              width: double.infinity,
+                              child: ListView.builder(
+                                itemCount: provider.filteredTournaments.length,
+                                itemBuilder: (context, index) {
+                                  final tournament =
+                                      provider.filteredTournaments[index];
+                                  return Card(
+                                    elevation: 1,
+                                    child: ListTile(
+                                      onTap: () {
+                                        showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                CustomAlert(
+                                                  dialogueWidget:
+                                                      CountriesListPopup(
+                                                    data: tournament,
+                                                  ),
+                                                ));
+                                      },
+                                      title: Text('${tournament.id}',
+                                          style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600)),
+                                      subtitle: Text(
+                                          tournament.teams?.join(', ') ?? ''),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-            )
-          ],
-        ),
-      ),
+              )
+            ],
+          ),
+        );
+      }),
     );
   }
 }

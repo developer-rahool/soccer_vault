@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
+import 'package:soccer_vault/controller/Tournament_provider.dart';
 import 'package:soccer_vault/models/tournamentModel.dart';
 import 'package:soccer_vault/popup/tournamentsPopup.dart';
 import 'package:soccer_vault/screens/home_screen.dart';
@@ -16,52 +19,30 @@ class TournamentPage extends StatefulWidget {
 }
 
 class _TournamentPageState extends State<TournamentPage> {
-  final searchController = TextEditingController();
-  List<ListTournamentModel> originalTournament = [];
-  List<ListTournamentModel> filteredTournament = [];
-  bool isLoading = true;
+  TournamentProvider data = TournamentProvider();
 
   @override
   void initState() {
-    // originalMatches = fetchMockTournament();
-    // filteredMatches = List.from(originalMatches);
-    fetchTournaments();
+    data = context.read<TournamentProvider>();
+    load();
     super.initState();
   }
 
-  fetchTournaments() async {
-    try {
-      var tournamentModel = await Services().getTournaments();
-
-      originalTournament = tournamentModel;
-      filteredTournament = List.from(originalTournament);
-
-      setState(() {
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      print(e);
-    }
+  load() async {
+    await data.fetchTournaments();
   }
 
   void searchByAlphabet(String query, BuildContext context) {
     if (query.isEmpty) {
-      setState(() {
-        filteredTournament = List.from(originalTournament);
-      });
+      data.filteredTournament = List.from(data.originalTournament);
     } else {
-      setState(() {
-        filteredTournament = originalTournament.where((data) {
-          String lowercaseTournament = data.lists.toString().toLowerCase();
-          String lowercaseSearchQuery = query.toLowerCase();
-          return lowercaseSearchQuery
-              .split('')
-              .every((letter) => lowercaseTournament.contains(letter));
-        }).toList();
-      });
+      data.filteredTournament = data.originalTournament.where((data) {
+        String lowercaseTournament = data.lists.toString().toLowerCase();
+        String lowercaseSearchQuery = query.toLowerCase();
+        return lowercaseSearchQuery
+            .split('')
+            .every((letter) => lowercaseTournament.contains(letter));
+      }).toList();
     }
   }
 
@@ -69,72 +50,62 @@ class _TournamentPageState extends State<TournamentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: lightBlackColor,
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    nextPage(context, HomeScreen());
-                  },
-                  icon: Icon(
-                    Icons.arrow_back_ios_new,
-                    size: 18,
-                    color: midBlackColor,
+      body: Consumer<TournamentProvider>(builder: (context, provider, child) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(30, 30, 30, 10),
+          child: Column(
+            children: [
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  BackButtonWidget(),
+                  Text(
+                    "Tournament List",
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: darkBlackColor),
                   ),
-                ),
-                Text(
-                  "Tournament List",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: darkBlackColor),
-                ),
-                SizedBox()
-                //IconButton(onPressed: (), icon: icon)
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            AppTextFormField(
-              appController: searchController,
-              height: 40,
-              contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-              maxLengthLine: 1,
-              prefixIcon: Icon(
-                Icons.search,
-                color: Colors.black45,
+                  SizedBox()
+                ],
               ),
-              hintText: "Search",
-              onChanged: (query) {
-                setState(() {
-                  searchByAlphabet(query!, context);
-                });
+              const SizedBox(
+                height: 15,
+              ),
+              AppTextFormField(
+                appController: provider.searchController,
+                height: 40,
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                maxLengthLine: 1,
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: Colors.black45,
+                ),
+                hintText: "Search",
+                onChanged: (query) {
+                  setState(() {
+                    searchByAlphabet(query!, context);
+                  });
 
-                return;
-              },
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Expanded(
-              child: isLoading
-                  ? Center(child: const CircularProgressIndicator())
-                  : SingleChildScrollView(
-                      child: SizedBox(
-                        height: screenHeight(context) * 0.78,
-                        width: double.infinity,
-                        child: Card(
-                          color: Colors.white,
-                          elevation: 1.5,
+                  return;
+                },
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Expanded(
+                child: provider.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : SingleChildScrollView(
+                        child: SizedBox(
+                          height: screenHeight(context) * 0.76,
+                          width: double.infinity,
                           child: ListView.builder(
-                            itemCount: filteredTournament.length,
+                            itemCount: provider.filteredTournament.length,
                             itemBuilder: (context, index) {
-                              final tournament = filteredTournament[index];
+                              final tournament =
+                                  provider.filteredTournament[index];
                               return Card(
                                 elevation: 1,
                                 child: ListTile(
@@ -156,11 +127,11 @@ class _TournamentPageState extends State<TournamentPage> {
                           ),
                         ),
                       ),
-                    ),
-            )
-          ],
-        ),
-      ),
+              )
+            ],
+          ),
+        );
+      }),
     );
   }
 }

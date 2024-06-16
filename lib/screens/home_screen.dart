@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:soccer_vault/const.dart';
 import 'package:soccer_vault/screens/menu_pages/Tournament_page.dart';
+import 'package:soccer_vault/screens/menu_pages/goal_score_by_matches.dart';
 import 'package:soccer_vault/screens/menu_pages/matches_page.dart';
 import 'package:soccer_vault/screens/menu_pages/team_page.dart';
 import 'package:soccer_vault/screens/menu_pages/tournament_by_countries_page.dart';
@@ -184,6 +185,56 @@ class _HomeScreenState extends State<HomeScreen> {
                                   width: 60,
                                   child: Image.asset(
                                       "assets/icons/tournamentIcon.png"),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        nextPage(context, GoalScorePage());
+                      },
+                      child: SizedBox(
+                        height: cardHeight,
+                        child: Card(
+                          color: Colors.white,
+                          elevation: 1.5,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Goal Scorer",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700,
+                                          color: darkBlackColor),
+                                    ),
+                                    Text(
+                                      "Goal records, states\nevents and more",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                          color: midBlackColor),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 60,
+                                  width: 60,
+                                  child: Image.asset(
+                                      "assets/icons/goalScorer.png"),
                                 ),
                               ],
                             ),

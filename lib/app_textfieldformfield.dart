@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:soccer_vault/const.dart';
@@ -9,6 +11,7 @@ class AppTextFormField extends StatelessWidget {
   TextInputAction? textInputAction;
   final String? hintText;
   double? hintsize;
+  double? radius;
   EdgeInsetsGeometry? contentPadding;
   TextStyle? style;
   FloatingLabelBehavior? floatingLabelBehavior;
@@ -41,6 +44,7 @@ class AppTextFormField extends StatelessWidget {
 
   AppTextFormField({
     Key? key,
+    this.radius,
     this.suffixIcon,
     this.prefixIcon,
     this.labelColor,
@@ -133,17 +137,17 @@ class AppTextFormField extends StatelessWidget {
                     labelsize ?? MediaQuery.of(context).size.height * 0.023,
                 fontWeight: FontWeight.w600),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(45),
+              borderRadius: BorderRadius.circular(radius ?? 45),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(45),
+              borderRadius: BorderRadius.circular(radius ?? 45),
               borderSide: BorderSide(color: Colors.transparent),
             ),
             disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(45),
+                borderRadius: BorderRadius.circular(radius ?? 45),
                 borderSide: BorderSide(color: Colors.transparent)),
             enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(45),
+                borderRadius: BorderRadius.circular(radius ?? 45),
                 borderSide: BorderSide(color: Colors.transparent))),
       ),
     );
