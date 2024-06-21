@@ -73,7 +73,7 @@ class _TeamsPopupState extends State<TeamsPopup> {
           ),
           SizedBox(
             width: double.infinity,
-            child: Custom_Button(
+            child: CustomButton(
                 text: "Copy",
                 onPressed: () {
                   toast(context);

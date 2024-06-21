@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:soccer_vault/const.dart';
 import 'package:soccer_vault/screens/menu_pages/Tournament_page.dart';
+import 'package:soccer_vault/screens/menu_pages/countries_list_page.dart';
 import 'package:soccer_vault/screens/menu_pages/goal_score_by_matches.dart';
 import 'package:soccer_vault/screens/menu_pages/matches_page.dart';
-import 'package:soccer_vault/screens/menu_pages/team_page.dart';
+import 'package:soccer_vault/screens/menu_pages/country_matches_records.dart';
 import 'package:soccer_vault/screens/menu_pages/tournament_by_countries_page.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -97,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        nextPage(context, TeamsPage());
+                        nextPage(context, CountriesListPage());
                       },
                       child: SizedBox(
                         height: cardHeight,
@@ -115,14 +116,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      "Teams",
+                                      "Country Records",
                                       style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w700,
                                           color: darkBlackColor),
                                     ),
                                     Text(
-                                      "Teams records, details\nevents and beyond",
+                                      "Rrecords, details events\nand beyond",
                                       style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w700,
@@ -245,53 +246,53 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(
                       height: 10,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        nextPage(context, CountryTournamentPage());
-                      },
-                      child: SizedBox(
-                        height: cardHeight,
-                        child: Card(
-                          color: Colors.white,
-                          elevation: 1.5,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Match by Countries",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w700,
-                                          color: darkBlackColor),
-                                    ),
-                                    Text(
-                                      "Countres record by match",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          color: midBlackColor),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 60,
-                                  width: 60,
-                                  child: Image.asset(
-                                      "assets/icons/countriesListIcon.png"),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     nextPage(context, CountryTournamentPage());
+                    //   },
+                    //   child: SizedBox(
+                    //     height: cardHeight,
+                    //     child: Card(
+                    //       color: Colors.white,
+                    //       elevation: 1.5,
+                    //       child: Padding(
+                    //         padding:
+                    //             const EdgeInsets.symmetric(horizontal: 20.0),
+                    //         child: Row(
+                    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //           children: [
+                    //             const Column(
+                    //               crossAxisAlignment: CrossAxisAlignment.start,
+                    //               mainAxisAlignment: MainAxisAlignment.center,
+                    //               children: [
+                    //                 Text(
+                    //                   "Match by Countries",
+                    //                   style: TextStyle(
+                    //                       fontSize: 18,
+                    //                       fontWeight: FontWeight.w700,
+                    //                       color: darkBlackColor),
+                    //                 ),
+                    //                 Text(
+                    //                   "Countries record by match",
+                    //                   style: TextStyle(
+                    //                       fontSize: 14,
+                    //                       fontWeight: FontWeight.w700,
+                    //                       color: midBlackColor),
+                    //                 )
+                    //               ],
+                    //             ),
+                    //             SizedBox(
+                    //               height: 60,
+                    //               width: 60,
+                    //               child: Image.asset(
+                    //                   "assets/icons/countriesListIcon.png"),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

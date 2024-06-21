@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:soccer_vault/controller/team_provider.dart';
-import 'package:soccer_vault/models/teamsModel.dart';
-import 'package:soccer_vault/screens/home_screen.dart';
 
 import '../../app_textfieldformfield.dart';
 import '../../const.dart';
-import '../../httpService.dart';
 import '../../popup/custom_alert.dart';
-import '../../popup/teams_popup.dart';
+import '../../popup/country_popup.dart';
 
-class TeamsPage extends StatefulWidget {
-  const TeamsPage({super.key});
+class CountryRecordPage extends StatefulWidget {
+  String? countryName;
+  CountryRecordPage({super.key, this.countryName});
 
   @override
-  State<TeamsPage> createState() => _TeamsPageState();
+  State<CountryRecordPage> createState() => _CountryRecordPageState();
 }
 
-class _TeamsPageState extends State<TeamsPage> {
+class _CountryRecordPageState extends State<CountryRecordPage> {
   TeamProvider data = TeamProvider();
 
   @override
@@ -28,35 +26,19 @@ class _TeamsPageState extends State<TeamsPage> {
   }
 
   load() async {
-    data.fetchTeamStatistics();
+    data.fetchTeamStatistics(widget.countryName);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: lightBlackColor,
+      appBar: AppBarWidget(title: "Country Record"),
       body: Consumer<TeamProvider>(builder: (context, provider, child) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(30, 30, 30, 10),
+          padding: mainPadding,
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  BackButtonWidget(),
-                  Text(
-                    "Teams",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: darkBlackColor),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  )
-                  //IconButton(onPressed: (), icon: icon)
-                ],
-              ),
               SizedBox(
                 height: 15,
               ),
@@ -78,7 +60,7 @@ class _TeamsPageState extends State<TeamsPage> {
                 onEditingComplete: () {
                   provider.onPress();
                 },
-                hintText: "Search by team",
+                hintText: "Search by country",
                 // onChanged: (query) {
                 //   provider.onChanged(query!);
 
@@ -89,34 +71,60 @@ class _TeamsPageState extends State<TeamsPage> {
                 height: 15,
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Text('Team: ',
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w600)),
-                      Text(provider.currentTeam,
-                          style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              overflow: TextOverflow.ellipsis))
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Text('Total Matches: ',
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w600)),
-                      Text("${provider.totalMatches}  ",
-                          style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              overflow: TextOverflow.ellipsis))
-                    ],
-                  ),
+                  const Text(' Country: ',
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                  Text(provider.currentTeam,
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          overflow: TextOverflow.ellipsis))
+                ],
+              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Row(
+              //       mainAxisAlignment: MainAxisAlignment.start,
+              //       children: [
+              //         const Text(' Country: ',
+              //             style: TextStyle(
+              //                 fontSize: 14, fontWeight: FontWeight.w600)),
+              //         Text(provider.currentTeam,
+              //             style: const TextStyle(
+              //                 fontSize: 14,
+              //                 fontWeight: FontWeight.w500,
+              //                 overflow: TextOverflow.ellipsis))
+              //       ],
+              //     ),
+              //     Row(
+              //       mainAxisAlignment: MainAxisAlignment.start,
+              //       children: [
+              //         const Text('Total Match: ',
+              //             style: TextStyle(
+              //                 fontSize: 14, fontWeight: FontWeight.w600)),
+              //         Text("${provider.totalMatches} ",
+              //             style: const TextStyle(
+              //                 fontSize: 14,
+              //                 fontWeight: FontWeight.w500,
+              //                 overflow: TextOverflow.ellipsis))
+              //       ],
+              //     ),
+              //   ],
+              // ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text(' Total Match: ',
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                  Text("${provider.totalMatches} ",
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          overflow: TextOverflow.ellipsis))
                 ],
               ),
               const SizedBox(

@@ -4,7 +4,7 @@ import 'package:soccer_vault/const.dart';
 import 'package:soccer_vault/screens/home_screen.dart';
 
 class Onboarding extends StatefulWidget {
-  Onboarding({
+  const Onboarding({
     super.key,
   });
 
@@ -22,8 +22,8 @@ class _OnboardingState extends State<Onboarding> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.8,
+            const SizedBox(),
+            Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -38,16 +38,8 @@ class _OnboardingState extends State<Onboarding> {
                       ),
                     ],
                   ),
-                  //const SizedBox(height: 10),
-                  // Text(
-                  //   "Title",
-                  //   style: TextStyle(
-                  //       fontSize: 24,
-                  //       fontWeight: FontWeight.bold,
-                  //       color: darkBlackColor),
-                  // ),
                   const SizedBox(height: 14),
-                  Text(
+                  const Text(
                     "Your Ultimate Repository for All Things Soccer",
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -60,7 +52,7 @@ class _OnboardingState extends State<Onboarding> {
             ),
             SizedBox(
               width: double.infinity,
-              child: Custom_Button(
+              child: CustomButton(
                 text: "Get Started",
                 onPressed: () async {
                   final pres = await SharedPreferences.getInstance();

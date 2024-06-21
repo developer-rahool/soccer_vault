@@ -16,11 +16,13 @@ class TeamProvider with ChangeNotifier {
   String currentTeam = "";
   bool isLoading = true;
 
-  fetchTeamStatistics() async {
+  fetchTeamStatistics(String? countryName) async {
     try {
       isLoading = true;
-      teamData = await Services()
-          .getTeamStatistics(searchByTeam == "" ? initialTeam : searchByTeam);
+      // teamData = await Services()
+      //     .getTeamStatistics(searchByTeam == "" ? initialTeam : searchByTeam);
+
+      teamData = await Services().getTeamStatistics(countryName);
 
       originalTeam = teamData.tournaments;
       filteredTeam = List.from(originalTeam!);
@@ -39,7 +41,7 @@ class TeamProvider with ChangeNotifier {
 
   onPress() {
     searchByTeam = searchController.text;
-    fetchTeamStatistics();
+    fetchTeamStatistics(searchByTeam == "" ? initialTeam : searchByTeam);
     notifyListeners();
   }
 

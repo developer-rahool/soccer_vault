@@ -1,38 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:soccer_vault/controller/Tournament_provider.dart';
-import 'package:soccer_vault/screens/menu_pages/tournament_by_countries_page.dart';
 
 import '../../app_textfieldformfield.dart';
 import '../../const.dart';
+import 'country_matches_records.dart';
 
-class TournamentPage extends StatefulWidget {
-  const TournamentPage({super.key});
+class CountriesListPage extends StatefulWidget {
+  const CountriesListPage({super.key});
 
   @override
-  State<TournamentPage> createState() => _TournamentPageState();
+  State<CountriesListPage> createState() => _CountriesListPageState();
 }
 
-class _TournamentPageState extends State<TournamentPage> {
-  TournamentProvider data = TournamentProvider();
+class _CountriesListPageState extends State<CountriesListPage> {
+  final searchController = TextEditingController();
+  List<String> originalCountryList = [];
+  List<String> filteredCountryList = [];
+  bool isLoading = false;
 
   @override
   void initState() {
-    data = context.read<TournamentProvider>();
-    load();
+    fetchTournaments();
     super.initState();
   }
 
-  load() async {
-    await data.fetchTournaments();
+  fetchTournaments() async {
+    isLoading = true;
+    searchController.clear();
+    originalCountryList = countriesList;
+    filteredCountryList = List.from(originalCountryList);
+
+    isLoading = false;
   }
 
   void searchByAlphabet(String query, BuildContext context) {
     if (query.isEmpty) {
-      data.filteredTournament = List.from(data.originalTournament);
+      filteredCountryList = List.from(originalCountryList);
     } else {
-      data.filteredTournament = data.originalTournament.where((data) {
-        String lowercaseTournament = data.lists.toString().toLowerCase();
+      filteredCountryList = originalCountryList.where((data) {
+        String lowercaseTournament = data.toString().toLowerCase();
         String lowercaseSearchQuery = query.toLowerCase();
         return lowercaseSearchQuery
             .split('')
@@ -44,10 +49,9 @@ class _TournamentPageState extends State<TournamentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: lightBlackColor,
-      appBar: AppBarWidget(title: "Tournament List"),
-      body: Consumer<TournamentProvider>(builder: (context, provider, child) {
-        return Padding(
+        backgroundColor: lightBlackColor,
+        appBar: AppBarWidget(title: "Countries"),
+        body: Padding(
           padding: mainPadding,
           child: Column(
             children: [
@@ -55,7 +59,7 @@ class _TournamentPageState extends State<TournamentPage> {
                 height: 15,
               ),
               AppTextFormField(
-                appController: provider.searchController,
+                appController: searchController,
                 height: 40,
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -64,7 +68,7 @@ class _TournamentPageState extends State<TournamentPage> {
                   Icons.search,
                   color: Colors.black45,
                 ),
-                hintText: "Search",
+                hintText: "Search by country",
                 onChanged: (query) {
                   setState(() {
                     searchByAlphabet(query!, context);
@@ -77,9 +81,9 @@ class _TournamentPageState extends State<TournamentPage> {
                 height: 15,
               ),
               Expanded(
-                child: provider.isLoading
+                child: isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : provider.filteredTournament.isEmpty
+                    : filteredCountryList.isEmpty
                         ? const Center(
                             child: Text("No Records",
                                 style: TextStyle(
@@ -90,30 +94,20 @@ class _TournamentPageState extends State<TournamentPage> {
                               height: screenHeight(context) * 0.76,
                               width: double.infinity,
                               child: ListView.builder(
-                                itemCount: provider.filteredTournament.length,
+                                itemCount: filteredCountryList.length,
                                 itemBuilder: (context, index) {
-                                  final tournament =
-                                      provider.filteredTournament[index];
                                   return Card(
                                     elevation: 1,
                                     child: ListTile(
                                       onTap: () {
                                         nextPage(
                                             context,
-                                            CountryTournamentPage(
-                                                tour: tournament.lists!));
-                                        // showDialog(
-                                        //     barrierDismissible: false,
-                                        //     context: context,
-                                        //     builder: (BuildContext context) =>
-                                        //         CustomAlert(
-                                        //           dialogueWidget:
-                                        //               tournamentPopup(
-                                        //             data: tournament,
-                                        //           ),
-                                        //         ));
+                                            CountryRecordPage(
+                                              countryName:
+                                                  filteredCountryList[index],
+                                            ));
                                       },
-                                      title: Text('${tournament.lists}'),
+                                      title: Text(filteredCountryList[index]),
                                     ),
                                   );
                                 },
@@ -123,8 +117,6 @@ class _TournamentPageState extends State<TournamentPage> {
               )
             ],
           ),
-        );
-      }),
-    );
+        ));
   }
 }

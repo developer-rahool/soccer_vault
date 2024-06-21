@@ -11,12 +11,15 @@ class TournamentByCountryProvider with ChangeNotifier {
   String initialTournament = "Friendly";
   bool isLoading = false;
 
-  fetchCountriesByTournaments() async {
+  fetchCountriesByTournaments(String tournament) async {
     try {
       searchController.clear();
       isLoading = true;
-      var tournamentModel = await Services().getCountriesByTournaments(
-          searchByTournament == "" ? initialTournament : searchByTournament);
+      var tournamentModel =
+          await Services().getCountriesByTournaments(tournament);
+      // var tournamentModel = await Services().getCountriesByTournaments(
+      //     searchByTournament == "" ? initialTournament : searchByTournament
+      //     );
       originalTournaments = tournamentModel;
       filteredTournaments = List.from(originalTournaments);
       searchByTournament = "";
@@ -29,11 +32,11 @@ class TournamentByCountryProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  onPress() {
-    searchByTournament = searchController.text;
-    fetchCountriesByTournaments();
-    notifyListeners();
-  }
+  // onPress() {
+  //   searchByTournament = searchController.text;
+  //   fetchCountriesByTournaments();
+  //   notifyListeners();
+  // }
 
   // onChanged(String query) {
   //   searchByTournament = query.toString();

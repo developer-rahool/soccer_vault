@@ -19,21 +19,25 @@ class Services {
     'x-apihub-key': 'rh5syBTEajhGpmfn5QB6XaiXogrkfgPOhBi8PfjcJjtbdN1QFM',
     'x-apihub-host': 'International-Football-Results-API.allthingsdev.co'
   };
-  Future getMatchesByYear(String? year) async {
-    var url = Uri.parse('${_baseUrl}matches?year=$year&skip=0&limit=10');
+  Future<List<MatchModel>> getMatchesByYear(
+      String? year, int skip, int limit) async {
+    var url =
+        Uri.parse('${_baseUrl}matches?year=$year&skip=$skip&limit=$limit');
     try {
       var response = await http.get(url, headers: headers);
 
       if (response.statusCode == 200) {
         var responseData = jsonDecode(response.body);
         return responseData['data']
-            .map((json) => MatchModel.fromJson(json))
+            .map<MatchModel>((json) => MatchModel.fromJson(json))
             .toList();
       } else {
         print('Error: ${response.reasonPhrase}');
+        return [];
       }
     } catch (e) {
       print('Error: $e');
+      return [];
     }
   }
 
@@ -75,7 +79,7 @@ class Services {
 
   Future getCountriesByTournaments(String tournament) async {
     var url = Uri.parse(
-        '${_baseUrl}list-countries-by-tournaments?tournament=$tournament&skip=0&limit=10');
+        '${_baseUrl}list-countries-by-tournaments?tournament=$tournament&skip=0&limit=100');
     try {
       var response = await http.get(url, headers: headers);
 

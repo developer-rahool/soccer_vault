@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../httpService.dart';
 import '../models/matchesModel.dart';
 
@@ -10,26 +9,42 @@ class MatchesProvider with ChangeNotifier {
   String initialYear = "2024";
   String searchByYear = "";
   bool isLoading = false;
+  int currentPage = 0; // Add this for pagination
+  bool hasMoreData = true; // To keep track if more data is available
 
-  fetchMatches() async {
+  fetchMatches({bool isRefresh = false}) async {
     try {
-      isLoading = true;
-      originalMatches.clear();
-      filteredMatches.clear();
-      var matches = await Services()
-          .getMatchesByYear(searchByYear == "" ? initialYear : searchByYear);
-      for (var data in matches) {
-        originalMatches.add(data);
+      if (isRefresh) {
+        currentPage = 0;
+        hasMoreData = true;
+        originalMatches.clear();
+        filteredMatches.clear();
       }
 
-      filteredMatches = List.from(originalMatches);
+      if (!hasMoreData) return;
+
+      isLoading = true;
+      notifyListeners();
+
+      var matches = await Services().getMatchesByYear(
+        searchByYear == "" ? initialYear : searchByYear,
+        currentPage * 20, // Pagination offset
+        20, // Number of items to load per request
+      );
+
+      if (matches.isEmpty) {
+        hasMoreData = false;
+      } else {
+        originalMatches.addAll(matches);
+        filteredMatches = List.from(originalMatches);
+        currentPage++;
+      }
 
       isLoading = false;
-      searchByYear = "";
+      // searchByYear = "";
       searchController.clear();
     } catch (e) {
       isLoading = false;
-
       print(e);
     }
     notifyListeners();
@@ -37,7 +52,6 @@ class MatchesProvider with ChangeNotifier {
 
   onPress() {
     searchByYear = searchController.text;
-    fetchMatches();
-    notifyListeners();
+    fetchMatches(isRefresh: true);
   }
 }

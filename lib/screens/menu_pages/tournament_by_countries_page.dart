@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../app_textfieldformfield.dart';
 import '../../const.dart';
 import '../../controller/tournament_country_provider.dart';
-import '../../popup/countriesList_popup.dart';
-import '../../popup/custom_alert.dart';
 
 class CountryTournamentPage extends StatefulWidget {
-  const CountryTournamentPage({super.key});
+  String? tour;
+  CountryTournamentPage({super.key, this.tour});
 
   @override
   State<CountryTournamentPage> createState() => _CountryTournamentPageState();
@@ -16,6 +13,8 @@ class CountryTournamentPage extends StatefulWidget {
 
 class _CountryTournamentPageState extends State<CountryTournamentPage> {
   TournamentByCountryProvider data = TournamentByCountryProvider();
+  String tournament = "";
+  List<String> teams = [];
   @override
   void initState() {
     data = context.read<TournamentByCountryProvider>();
@@ -24,60 +23,20 @@ class _CountryTournamentPageState extends State<CountryTournamentPage> {
   }
 
   load() async {
-    data.fetchCountriesByTournaments();
+    data.fetchCountriesByTournaments(widget.tour!);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: lightBlackColor,
+      appBar: AppBarWidget(title: "Participations"),
       body: Consumer<TournamentByCountryProvider>(
           builder: (context, provider, child) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(30, 30, 30, 10),
+          padding: mainPadding,
           child: Column(
             children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  BackButtonWidget(),
-                  Text(
-                    "Country List",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: darkBlackColor),
-                  ),
-                  SizedBox()
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              AppTextFormField(
-                appController: provider.searchController,
-                height: 40,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                maxLengthLine: 1,
-                suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.search,
-                    color: Colors.black45,
-                  ),
-                  onPressed: () {
-                    provider.onPress();
-                  },
-                ),
-                onEditingComplete: () {
-                  provider.onPress();
-                },
-                hintText: "Search by tournament",
-                // onChanged: (query) {
-                //   provider.onChanged(query!);
-                //   return;
-                // },
-              ),
               const SizedBox(
                 height: 15,
               ),
@@ -97,35 +56,49 @@ class _CountryTournamentPageState extends State<CountryTournamentPage> {
                               child: ListView.builder(
                                 itemCount: provider.filteredTournaments.length,
                                 itemBuilder: (context, index) {
-                                  final tournament =
-                                      provider.filteredTournaments[index];
+                                  tournament =
+                                      provider.filteredTournaments[index].id!;
+                                  teams = provider
+                                      .filteredTournaments[index].teams!;
                                   return Card(
                                     elevation: 1,
                                     child: ListTile(
-                                      onTap: () {
-                                        showDialog(
-                                            barrierDismissible: false,
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                CustomAlert(
-                                                  dialogueWidget:
-                                                      CountriesListPopup(
-                                                    data: tournament,
-                                                  ),
-                                                ));
-                                      },
-                                      title: Text('${tournament.id}',
+                                      // onTap: () {
+                                      //   nextPage(
+                                      //       context,
+                                      //       DetailPage(
+                                      //         child: CountriesListPopup(
+                                      //           data: tournament,
+                                      //         ),
+                                      //         copyWidget: copyText(
+                                      //             "Tournament: ${tournament.id}, Countries: ${tournament.teams?.join(', ') ?? ''}"),
+                                      //       ));
+                                      // },
+                                      title: Text('${tournament}',
                                           style: const TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600)),
-                                      subtitle: Text(
-                                          tournament.teams?.join(', ') ?? ''),
+                                      subtitle: Text(teams.join(', ')),
                                     ),
                                   );
                                 },
                               ),
                             ),
                           ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 15),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: CustomButton(
+                      text: "Copy",
+                      onPressed: () {
+                        toast(context);
+                        copyText(
+                            "Tournament: ${tournament}, Countries: ${teams.join(', ')}");
+                        Navigator.pop(context);
+                      }),
+                ),
               )
             ],
           ),

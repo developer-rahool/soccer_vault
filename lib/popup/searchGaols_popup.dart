@@ -77,7 +77,7 @@ class _SearchGoalPopupState extends State<SearchGoalPopup> {
               ),
               SizedBox(
                 width: double.infinity,
-                child: Custom_Button(
+                child: CustomButton(
                     text: "Search",
                     onPressed: () async {
                       if (data.dateController.text == "" ||
