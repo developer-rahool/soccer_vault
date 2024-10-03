@@ -85,7 +85,6 @@ class Services {
 
       if (response.statusCode == 200) {
         var responseData = jsonDecode(response.body);
-        print(responseData);
         List<dynamic> data = responseData['data'];
         return data
             .map((json) => CountryTournamentData.fromJson(json))

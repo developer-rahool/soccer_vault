@@ -5,17 +5,17 @@ import 'package:soccer_vault/controller/Tournament_provider.dart';
 import 'package:soccer_vault/controller/goal_scorer_provider.dart';
 import 'package:soccer_vault/controller/matches_provider.dart';
 import 'package:soccer_vault/controller/team_provider.dart';
-import 'package:soccer_vault/screens/home_screen.dart';
-import 'package:soccer_vault/screens/onboarding_screen.dart';
 import 'controller/tournament_country_provider.dart';
 import 'package:provider/provider.dart';
+
+import 'screens/splash_screen.dart';
 
 bool? isOnBoarding;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences pres = await SharedPreferences.getInstance();
-  isOnBoarding = pres.getBool("onboarding")!;
+  isOnBoarding = pres.getBool("onboarding") ?? false;
   runApp(const MyApp());
 }
 
@@ -40,7 +40,8 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: darkBlackColor),
           useMaterial3: true,
         ),
-        home: isOnBoarding == true ? HomeScreen() : Onboarding(),
+        //home: isOnBoarding == true ? HomeScreen() : Onboarding(),
+        home: SplashScreen(),
       ),
     );
   }
